@@ -1,53 +1,39 @@
 import {Button} from '../components/Button';
 import logoImg from '../assets/images/logo.svg';
-
+import deleteImg from '../assets/images/delete.svg'
 import "../styles/room.scss";
 import { RoomCode } from '../components/RoomCode';
-import { useParams } from 'react-router-dom';
-import { FormEvent, useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { database } from '../services/firebase';
+import { useHistory, useParams } from 'react-router-dom';
+
 import { Question } from '../components/Question';
 import { useRoom } from '../hooks/useRoom';
+import { database } from '../services/firebase';
 
 type RoomParams = {
   id: string;
 }
 
 export function AdminRoom(){
-  const {user} = useAuth();
+ 
   const params = useParams<RoomParams>();
-  const [ newQuestion, setNewQuestion] = useState("");
+
+  const history = useHistory();
 
   const roomId = params.id;
 
   const { title, questions} = useRoom(roomId);
 
-  async function handleSendQuestion(event: FormEvent){
+  async function handleEndRoom(){
+    database.ref(`rooms/${roomId}`).update({
+      endedAt: new Date()
+    })
+    history.push('/');
+  }
 
-    event.preventDefault();
-
-    if(newQuestion.trim() === ''){
-      return;
-    }
-
-    if(!user){
-      throw new Error("You must be logged in")
-    }
-
-    const question = {
-      content: newQuestion,
-      author:{
-        name: user.name,
-        avatar: user.avatar,
-      },
-      isHighlighted:false,
-      isAnswered:false
-    };
-
-    await database.ref(`rooms/${roomId}/questions`).push(question);
-
-    setNewQuestion('');
+  async function handleDeleteQuestion(questionId: string){
+   if( window.confirm("Tem certeza que você deseja excluir esta pergunta?")){
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+   }
   }
 
   return(
@@ -55,8 +41,14 @@ export function AdminRoom(){
       <header>
         <div className="content">
           <img src={logoImg} alt="Letmeask" />
-
-         <RoomCode code ="1223123123"/>
+          <div>
+            <RoomCode code ="1223123123"/>
+            <Button 
+            isOutlined
+            onClick={handleEndRoom}
+            >Encerrar sala
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -67,40 +59,22 @@ export function AdminRoom(){
           </h1>
          {questions.length > 0 &&  <span>{questions.length} perguntas</span>}
         </div>
-
-        <form onSubmit={handleSendQuestion}>
-         <textarea
-            placeholder="O que você quer perguntar?"
-            onChange={event => setNewQuestion(event.target.value)}
-            value={newQuestion}
-         />
-
-         <div className="form-footer">
-          {user ?(
-          <div className="user-info">
-            <img src={user.avatar} alt={user.name} />
-            <span>{user.name}</span>
-          </div>
-          )
-          :( <span>Para enviar uma pergunta,
-             <button>faça seu login</button>
-           </span>)
-           }
-            <Button 
-            type="submit" 
-            disabled={!user}>
-              Enviar pergunta
-            </Button>
-         </div>
-        </form>
           <div className="question-list">
             {questions.map(question =>{
               return(
                 <Question
-                  key={question.content}
+                  key={question.id}
                   content={question.content}
                   author={question.author}
-                />
+                >
+
+                  <button
+                  type="button"
+                  onClick={()=>{handleDeleteQuestion(question.id)}}
+                  >
+                    <img src={deleteImg} alt="Remover pergunta" />
+                  </button>
+                </Question>
               )
             })}
           </div>
