@@ -32,8 +32,7 @@
   <b>Desenvolvido com REACT e Firebase,</b>
   Projeto com proposta para uma aplicação de forum, onde a mesma utiliza de autenticação do gmail, para criação de sala e interação de tema proposto. Funcionalidades se encontram em realizar a criação de sala, onde usuários podem interagir de forma discursiva sobre o tema, onde é possível curtir e validar melhor resposta..</h4>
 
-  
-  <img src="./src/assets/Imgdocs/Letmesak.mp4" alt="Video demonstrativo da aplicação">
+  <img src="./src/assets/Imgdocs/letmeaskgif.gif" alt="Video demonstrativo da aplicação">
 </div>
 
 
