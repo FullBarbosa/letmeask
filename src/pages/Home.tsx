@@ -61,7 +61,6 @@ export function Home() {
             <img src={googleIconImg} alt="Logo do Google" />
             Crie sua sala com o Google 
           </button>
-          <h1>Teste de integração continua</h1>
           <div className="separator">ou entre em uma sala</div>
           <form onSubmit={handleJoinRoom}>
             <input 

@@ -62,7 +62,7 @@ export function AdminRoom(){
         <div className="content">
           <img src={logoImg} alt="Letmeask" />
           <div>
-            <RoomCode code ="1223123123"/>
+          <RoomCode code={roomId} />
             <Button 
             isOutlined
             onClick={handleEndRoom}
